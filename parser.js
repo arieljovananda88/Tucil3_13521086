@@ -42,16 +42,7 @@ class Graph{
                 //console.log(graph)
               }
             }
-          }
-          //print
-        /*for (let i = 0; i < this.vertices.length; i++) {
-            const vertex = this.vertices[i];
-            console.log(`Node ${vertex}:`);
-            const edges = this.graph[vertex];
-            for (const [edge, weight] of Object.entries(edges)) {
-              console.log(`- ${edge} (weight: ${weight})`);
-            }
-        }*/     
+          } 
     }
 
     UCS(start, goal){
@@ -172,6 +163,6 @@ class Graph{
 const graph = new Graph('graf.txt')
 //const ucs = new UCS('graf.txt')
 graph.parse()
-//graph.print()
-graph.UCS('B', 'C')
+graph.print()
+//graph.UCS('A', 'H')
 //ucs.print()

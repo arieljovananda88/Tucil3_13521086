@@ -2,7 +2,16 @@
 <html>
   <head>
     <title>Graph Visualization</title>
+    <style type="text/css">
+      #mynetwork {
+        width: 600px;
+        height: 400px;
+        margin: 0 auto;
+        border: 1px solid lightgray;
+      }
+    </style>
     <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <script src="tes.js"></script>
   </head>
   <body>
     <div id="mynetwork"></div>
@@ -19,15 +28,17 @@
       for (let i = 0; i < data.length; i++) {
         nodes.push({ id: i + 1, label: String.fromCharCode(65 + i) });
       }
+      console.log(nodes)
       
       const edges = [];
       for (let i = 0; i < data.length; i++) {
         for (let j = 0; j < data[i].length; j++) {
           if (data[i][j] === 1) {
-            edges.push({ from: i + 1, to: j + 1 });
+            edges.push({ from: i + 1, to: j + 1, label: 'Edge Label' });
           }
         }
       }
+      console.log(edges)
       
       const container = document.getElementById('mynetwork');
       const options = {};

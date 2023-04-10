@@ -60,8 +60,6 @@
         vertices2 = columnLabels;
 
         nodes = Object.keys(nodeCoordinates).map(node => ({ id: node, label: node }));
-        const edges = [];
-        const visited = {}
         for (let i = 0; i < rowLabels.length; i++) {
             const sourceNode = rowLabels[i];
             for (let j = 0; j < columnLabels.length; j++) { // Change to < instead of <=
@@ -76,72 +74,56 @@
                 }
             }
         }
-        for (let i = 0; i < matrix.length; i++) {
-          for (let j = 0; j < matrix[i].length; j++) {
-            if (matrix[i][j] != 0) {
-                if(visited[matrix[i][j]] != true){
-                    edges.push({ from: vertices[i], to: vertices2[j], label: matrix[i][j].toString(), color: {color: "blue"}});
-                }
-                visited[matrix[i][j]] = true
-            }
-          }
-        }
-        console.log(graph)
-        console.log(vertices)
-        console.log(nodeCoordinates)
-
-        const container = document.getElementById('mynetwork');
-        const data = { nodes, edges };
-        const options = {};
-        const network = new vis.Network(container, data, options);
+        visualize()
       }
 
       function runUCS(event) {
         console.log(graph, vertices, nodeCoordinates)
-        const endPath = UCS("bandung", "B", graph, vertices, nodeCoordinates);
+        const endPath = UCS("B", "H", graph, vertices, nodeCoordinates);
         let road = endPath.road
         let count = 0
+        let count2 = 0
         console.log(road.length)
         console.log(matrix)
         for(let i = 0; i < matrix.length; i++){
             for(let j = 0; j < matrix.length; j++){
-                console.log(matrix[i][j])
-                console.log("road = ", road[count])
-                if(road[count] == matrix[i][j]){
-                    matrix[i][j] = "+" + matrix[i][j]
-                    console.log("elemen= " ,matrix[i][j])
-                    count++
-                    console.log("count= ", count)
-                }
-                if(count == road.length){
-                    break
+                for(let k = 0; k < road.length; k++){
+                    if(road[k] == matrix[i][j]){
+                        matrix[i][j] = "+" + matrix[i][j]
+                    }
                 }
             }
         }
-        console.log(matrix)
+        visualize()
+    }
+
+    function visualize(){
         const visited = {}
-        const edges = [];
+        const edges = []
         for (let i = 0; i < matrix.length; i++) {
-          for (let j = 0; j < matrix[i].length; j++) {
-            if(matrix[i][j] == -1){
-                if(visited[matrix[i][j]] != true){
-                    edges.push({ from: vertices[i], to: vertices2[j], label: matrix[i][j].toString(), color: {color: "red"}});
+            for (let j = 0; j < matrix[i].length; j++) {
+                if(matrix[i][j].startsWith("+")){
+                    if(visited[matrix[i][j]] != true){
+                        edges.push({ from: vertices[i], to: vertices2[j], label: matrix[i][j].substring(1), color: {color: "red"}});
+                    }
+                    visited[matrix[i][j]] = true
                 }
-                visited[matrix[i][j]] = true
-            }
-            if (matrix[i][j] != 0) {
-                if(visited[matrix[i][j]] != true){
-                    edges.push({ from: vertices[i], to: vertices2[j], label: matrix[i][j].toString(), color: {color: "blue"}});
+                if (matrix[i][j] != 0) {
+                    if(visited[matrix[i][j]] != true){
+                        edges.push({ from: vertices[i], to: vertices2[j], label: matrix[i][j], color: {color: "blue"}});
+                    }
+                    visited[matrix[i][j]] = true
                 }
-                visited[matrix[i][j]] = true
             }
-          }
         }
+        console.log(edges)
         const container = document.getElementById('mynetwork');
         const data = { nodes, edges };
         const options = {};
         const network = new vis.Network(container, data, options);
     }
+
+
     </script>
     <button onclick="runUCS(event)">Run UCS</button>
   </body>

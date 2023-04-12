@@ -28,6 +28,13 @@ body {
 
 }
 
+#dist-container {
+   position: absolute;
+   top: 505px;
+   left: 31%;
+   color: #00aa90;
+ }
+
 
 select {
     -webkit-appearance:none;

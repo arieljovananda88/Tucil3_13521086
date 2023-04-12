@@ -14,6 +14,7 @@
     <div class="container">
         <div id="mynetwork"></div>
         <button class = "reset-btn" onclick="window.location.reload()">Reset</button>
+        <div id="dist-container"></div>
         <div class="file-upload">
             <label for="file-input">Choose File</label>
             <input type="file" id="file-input">
@@ -94,17 +95,10 @@
                 }
             }
         }
-        // console.log(nodeCoordinates["A"].x)
-        // console.log(typeof(nodes[0].x))
-        console.log(matrix)
-        console.log(dummyMatrix)
-        visualize(dummyMatrix)
+        let dist = 0
+        visualize(dummyMatrix, dist)
         const select = document.getElementById('my-select');
         const select2 = document.getElementById('my-select2')
-        console.log(vertices)
-        console.log(matrix)
-        console.log(dummyMatrix)
-        console.log(nodeCoordinates)
         for (let ver in vertices) {
             const option = document.createElement('option');
             option.text = `${vertices[ver]}`;
@@ -128,6 +122,7 @@
         const endPath = UCS(vertices[start], vertices[goal], graph, vertices, nodeCoordinates);
         // const endPath = UCS("G", "F", graph, vertices, nodeCoordinates);
         let road = endPath.road
+        let dist = endPath.dist
         console.log(matrix)
         let resMatrix = matrix.slice();
         for(let i = 0; i < resMatrix.length; i++){
@@ -139,7 +134,7 @@
                 }
             }
         }
-        visualize(resMatrix)
+        visualize(resMatrix, dist)
     }
 
     function runAStar(event){
@@ -149,6 +144,7 @@
         const endPath = AStar(vertices[start], vertices[goal], graph, vertices, nodeCoordinates);
         // const endPath = UCS("G", "F", graph, vertices, nodeCoordinates);
         let road = endPath.road
+        let dist = endPath.dist
         console.log(road)
         let resMatrix = matrix
         for(let i = 0; i < resMatrix.length; i++){
@@ -160,11 +156,11 @@
                 }
             }
         }
-        visualize(resMatrix)
+        visualize(resMatrix, dist)
 
     }
 
-    function visualize(matrixInput){
+    function visualize(matrixInput, dist){
         const visited = {}
         const edges = []
         for (let i = 0; i < matrixInput.length; i++) {
@@ -211,6 +207,8 @@
             },
         };
         const network = new vis.Network(container, data, options);
+        const distContainer = document.getElementById('dist-container');
+        distContainer.innerHTML = 'Distance: ' + dist
     }
       </script>  
   </body>

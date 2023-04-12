@@ -3,9 +3,9 @@
   <head>
     <title>Graph Visualization</title>
     <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
-    <script src="../src/UCS.js"></script>
-    <script src="../src/AStar.js"></script>
-    <link rel="stylesheet" href="../src/style.css" />
+    <script src="UCS.js"></script>
+    <script src="AStar.js"></script>
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <header>
@@ -55,7 +55,7 @@
             continue;
           } else {
             const [node, x, y] = inputLines[i].split(' ');
-            nodeCoordinates[node] = { x: parseInt(x), y: parseInt(y) };
+            nodeCoordinates[node] = { x: parseFloat(x), y: parseFloat(y) };
           }
         }
 
@@ -73,11 +73,16 @@
         vertices2 = columnLabels;
         dummyMatrix = matrix.slice()
         console.log(matrix)
+        console.log(nodeCoordinates)
 
         nodes = Object.keys(nodeCoordinates).map(node => ({ id: node, label: node, x: nodeCoordinates[node].x, y: nodeCoordinates[node].y }));
+        console.log(nodes)
+        console.log(rowLabels)
+        console.log(columnLabels)
         for (let i = 0; i < rowLabels.length; i++) {
             const sourceNode = rowLabels[i];
             for (let j = 0; j < columnLabels.length; j++) { // Change to < instead of <=
+                console.log(matrix[i][j])
                 const road = matrix[i][j].toString();
                 if (road != "0") { // Change to "0" instead of 0
                 const targetNode = columnLabels[j];
@@ -99,6 +104,7 @@
         console.log(vertices)
         console.log(matrix)
         console.log(dummyMatrix)
+        console.log(nodeCoordinates)
         for (let ver in vertices) {
             const option = document.createElement('option');
             option.text = `${vertices[ver]}`;
@@ -188,11 +194,11 @@
             nodes: {
                 shape: "circle",
                 font: {
-                size: 14,
+                size: 8,
                 color: "black"
                 },
                 scaling: {
-                label: true
+                label: false
                 },
                 color: {
                 border: "white",

@@ -1,0 +1,19 @@
+8
+GerbangDepan -6.893036 107.610444
+PertigaanFSRD -6.892621 107.610425
+PertugaanLapcin -6.891930 107.610398
+BelakangSAPPK -6.891360 107.612171
+tai -6.891988 107.608708
+GKUB -6.891077 107.608681
+Labtek8 -6.890976 107.611557
+SF -6.889858 107.611509
+
+  GerbangDepan PertigaanFSRD PertugaanLapcin BelakangSAPPK tai GKUB Labtek8 SF
+GerbangDepan 0 AB 0 0 0 0 0 0
+PertigaanFSRD  AB 0 BC 0 0 0 0 0
+PertugaanLapcin  0 BC 0 CD 0 0 0 0
+BelakangSAPPK  0 0 CD 0 DE 0 0 0
+tai  0 0 0 DE 0 EF 0 0
+GKUB  0 0 0 0 EF 0 FG 0
+Labtek8  0 0 0 0 0 FG 0 GH
+SF 0 0 0 0 0 0 GH 0

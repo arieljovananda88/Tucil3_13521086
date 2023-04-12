@@ -61,6 +61,16 @@ function UCS(start, goal, graph, vertices, nodeCoor){
   let startNode = 0
   let currNode = start
   console.log("start UCS search...")
+  console.log(start, goal)
+  console.log(start === goal)
+  if(start === goal){
+    console.log("masuk")
+    endPath[0] = {
+        path: [start],
+        dist: 0,
+        road: []
+    }   
+  }
   activePaths[startNode] = {
       edgeNode: start,
       dist: 0,
@@ -86,17 +96,19 @@ function UCS(start, goal, graph, vertices, nodeCoor){
           }
       }                    
       currNode = lowestDistNode
+      if(currNode === null){
+        break
+      }
       //console.log(currNode)
       //console.log("current node = ", currNode)
       //console.log(visited[currNode])
       //console.log(cu)
       console.log("currnode = ", currNode)
-      console.log(nodeCoor)
       let currPath = activePaths[currPathKe].path
       let currDist = activePaths[currPathKe].dist
       let currRoad = activePaths[currPathKe].road
-      console.log(nodeCoor[currNode].x)
       for(let branchNode in graph[currNode]){
+        console.log("branch node = ", branchNode)
           if(!visited[branchNode] === true && branchNode != goal && branchNode != currNode){
             const x1 = nodeCoor[currNode].x;
             const y1 = nodeCoor[currNode].y;
@@ -109,7 +121,7 @@ function UCS(start, goal, graph, vertices, nodeCoor){
             let newDist = currDist + result
             let newPath = currPath.concat(branchNode)
             let newRoad = currRoad.concat(graph[currNode][branchNode])
-            // let i = 0
+            let i = 0
             // for (let node in activePaths) {
             //     i++
             //     console.log(`Path ${i}: [${activePaths[node].path}], cost: ${activePaths[node].dist}`);
@@ -149,13 +161,14 @@ function UCS(start, goal, graph, vertices, nodeCoor){
       visited[currNode] = true
       delete activePaths[currPathKe]
       let i = 0
-      /*for (let node in activePaths) {
+      for (let node in activePaths) {
           i++
           console.log(`Path ${i}: [${activePaths[node].path}], cost: ${activePaths[node].dist}`);
-      }*/
+      }
       lowestCost = Infinity
       lowestCostNode = null
       currPathKe = 0;
+      console.log("end paths = ", endPath)
       /*console.log("visited before = ", visited)
       console.log("end paths = ", endPath)
       console.log("visited length = ", Object.keys(visited).length)
@@ -174,7 +187,8 @@ function UCS(start, goal, graph, vertices, nodeCoor){
                     
 }
 
-function AStar(start, goal, graph, vertices, vertices2, nodeCoor){
+function AStar(start, goal, graph, vertices, nodeCoor){
+  
   let visited = {}
   let activePaths = {}
   let endPath = {}
@@ -182,12 +196,23 @@ function AStar(start, goal, graph, vertices, vertices2, nodeCoor){
   let startNode = 0
   let currNode = start
   console.log("start A* search...")
+  if(start == goal){
+    endPath[0] = {
+        heuristik: 0,
+        aStar: 0,
+        path: [start],
+        dist: 0,
+        road: []
+    }
+      
+  }
   activePaths[startNode] = {
       edgeNode: start,
       aStar: 0, //A star score
       dist: 0,
       heuristik: 0,
-      path: [start]
+      path: [start],
+      road: []
   }
   // console.log(activePaths[startNode].edgeNode)
   // console.log(currNode)
@@ -208,10 +233,14 @@ function AStar(start, goal, graph, vertices, vertices2, nodeCoor){
         }
     }
     currNode = LowestAStarNode
+    if(currNode === null){
+      break
+    }
     //console.log("current node = ", currNode)
     let currPath = activePaths[currPathKe].path
     let currDist = activePaths[currPathKe].dist
     let currHeu = activePaths[currPathKe].heuristik
+    let currRoad = activePaths[currPathKe].road
     for(let branchNode in graph[currNode]){
         if(!visited[branchNode] === true && branchNode != goal && branchNode != currNode){
           const x1 = nodeCoor[currNode].x;
@@ -231,6 +260,7 @@ function AStar(start, goal, graph, vertices, vertices2, nodeCoor){
           let newDist = currDist + distCurrBr
           let newAStar = currDist + distCurrBr + newHeu
           let newPath = currPath.concat(branchNode)
+          let newRoad = currRoad.concat(graph[currNode][branchNode])
           let i = 0
           /*for (let node in activePaths) {
               i++
@@ -245,7 +275,8 @@ function AStar(start, goal, graph, vertices, vertices2, nodeCoor){
               heuristik: newHeu,
               dist: newDist,
               aStar: newAStar,
-              path: newPath
+              path: newPath,
+              road: newRoad
           }
           //console.log("active paths that was added = ", activePaths[pathKe])
         }
@@ -267,26 +298,27 @@ function AStar(start, goal, graph, vertices, vertices2, nodeCoor){
           let newDist = currDist + distCurrBr
           let newAStar = currDist + distCurrBr + newHeu
           let newPath = currPath.concat(branchNode)
+          let newRoad = currRoad.concat(graph[currNode][branchNode])
           pathKe++
           endPath[pathKe] = { 
               heuristik: newHeu,
               aStar: newAStar,
               path: newPath,
-              dist: newDist
+              dist: newDist,
+              road: newRoad
           }
         }
     }                
     
-  visited[currNode] = true
-  delete activePaths[currPathKe]
-  let i = 0
-  /*for (let node in activePaths) {
-      i++
-      console.log(`Path ${i}: [${activePaths[node].path}], A Star Value: ${activePaths[node].aStar}, heu: ${activePaths[node].heuristik}`);
-  }*/
-  lowestCost = Infinity
-  lowestCostNode = null
-  currPathKe = 0;
+    visited[currNode] = true
+    delete activePaths[currPathKe]
+    /*for (let node in activePaths) {
+        i++
+        console.log(`Path ${i}: [${activePaths[node].path}], A Star Value: ${activePaths[node].aStar}, heu: ${activePaths[node].heuristik}`);
+    }*/
+    lowestCost = Infinity
+    lowestCostNode = null
+    currPathKe = 0;
   //console.log("visited before = ", visited)
   //console.log("visited length = ", Object.keys(visited).length)
   //console.log("akhir")
@@ -299,14 +331,14 @@ function AStar(start, goal, graph, vertices, vertices2, nodeCoor){
       return acc;
   }, ['', Infinity]);
   console.log(`Minimal dist path: ${minPath}, dist: ${minDist}`);
-  console.log(endPath[minPath])
+  console.log(endPath)
   return endPath[minPath];
 }
 
 
 // console.log(nodeCoordinates)
 // AStar("F", "A", graph, vertices, vertices2, nodeCoordinates)
-// UCS("bandung", "B", graph, vertices, nodeCoordinates)
+// UCS("G", "F", graph, vertices, nodeCoordinates)
 // console.log(nodeCoordinates["bandung"].x)
 // console.log(graph["A"]["B"])
 //console.log(nodeCoordinates["A"].x)

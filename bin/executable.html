@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Graph Visualization</title>
+    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <script src="../src/UCS.js"></script>
+    <script src="../src/AStar.js"></script>
+    <link rel="stylesheet" href="../src/style.css" />
+  </head>
+  <body>
+    <header>
+		<h1>Route Finder</h1>
+	</header>
+    <div class="container">
+        <div id="mynetwork"></div>
+        <button class = "reset-btn" onclick="window.location.reload()">Reset</button>
+        <div class="file-upload">
+            <label for="file-input">Choose File</label>
+            <input type="file" id="file-input">
+        </div>
+        <div class="select1">
+            <select id="my-select"></select>
+        </div>
+        <div class="select2">
+            <select id="my-select2"></select>
+        </div>
+        <div class="buttons">
+            <button class="run-btn1" onclick="runUCS(event)">RUN UCS</button>
+            <button class="run-btn" onclick="runAStar(event)">RUN A*</button>
+        </div>
+    </div>
+    <script>
+      const fileInput = document.getElementById('file-input');
+      fileInput.addEventListener('change', handleFileSelect);
+
+      function handleFileSelect(event) {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+        reader.onload = handleFileLoad;
+        reader.readAsText(file);
+      }
+
+      let graph, vertices, vertices2, nodeCoordinates, matrix, nodes
+
+      function handleFileLoad(event) {
+        console.log(event.target.result)
+        const input = event.target.result;
+        const inputLines = input.split('\n').map(line => line.trim());
+        const amountOfCoor = parseInt(inputLines[0]);
+
+        // parse the node coordinates
+        nodeCoordinates = {};
+        for (let i = 1; i < amountOfCoor + 1; i++) {
+          if (i == 0) {
+            continue;
+          } else {
+            const [node, x, y] = inputLines[i].split(' ');
+            nodeCoordinates[node] = { x: parseInt(x), y: parseInt(y) };
+          }
+        }
+
+        const matrixLine = 2 + amountOfCoor;
+        const columnLabels = inputLines[matrixLine].split(' ');
+        const rowLabels = inputLines.slice(matrixLine + 1).map(line => line.split(' ')[0]);
+        graph = {};
+        matrix = input
+          .split('\n')
+          .slice(matrixLine + 1)
+          .map(row => row.trim().split(/\s+/).slice(1).map(num => String(num)))
+
+        columnLabels.forEach(vertex => graph[vertex] = {});
+        vertices = rowLabels;
+        vertices2 = columnLabels;
+        dummyMatrix = matrix.slice()
+        console.log(matrix)
+
+        nodes = Object.keys(nodeCoordinates).map(node => ({ id: node, label: node, x: nodeCoordinates[node].x, y: nodeCoordinates[node].y }));
+        for (let i = 0; i < rowLabels.length; i++) {
+            const sourceNode = rowLabels[i];
+            for (let j = 0; j < columnLabels.length; j++) { // Change to < instead of <=
+                const road = matrix[i][j].toString();
+                if (road != "0") { // Change to "0" instead of 0
+                const targetNode = columnLabels[j];
+                // add the target node to the graph object if it doesn't exist yet
+                if (!graph[targetNode]) {
+                    graph[targetNode] = {};
+                }
+                graph[sourceNode][targetNode] = road;
+                }
+            }
+        }
+        // console.log(nodeCoordinates["A"].x)
+        // console.log(typeof(nodes[0].x))
+        console.log(matrix)
+        console.log(dummyMatrix)
+        visualize(dummyMatrix)
+        const select = document.getElementById('my-select');
+        const select2 = document.getElementById('my-select2')
+        console.log(vertices)
+        console.log(matrix)
+        console.log(dummyMatrix)
+        for (let ver in vertices) {
+            const option = document.createElement('option');
+            option.text = `${vertices[ver]}`;
+            option.value = ver;
+            select.add(option);
+        }
+        for (let ver in vertices) {
+            const option = document.createElement('option');
+            option.text = `${vertices[ver]}`;
+            option.value = ver;
+            select2.add(option);
+        }
+
+      }
+
+      function runUCS(event) {
+        console.log(graph, vertices, nodeCoordinates)
+        const start = document.getElementById('my-select').value; // Get the selected value
+        const goal = document.getElementById('my-select2').value;
+        console.log(matrix)
+        const endPath = UCS(vertices[start], vertices[goal], graph, vertices, nodeCoordinates);
+        // const endPath = UCS("G", "F", graph, vertices, nodeCoordinates);
+        let road = endPath.road
+        console.log(matrix)
+        let resMatrix = matrix.slice();
+        for(let i = 0; i < resMatrix.length; i++){
+            for(let j = 0; j < resMatrix.length; j++){
+                for(let k = 0; k < road.length; k++){
+                    if(road[k] == resMatrix[i][j]){
+                        resMatrix[i][j] = "+" + resMatrix[i][j]
+                    }
+                }
+            }
+        }
+        visualize(resMatrix)
+    }
+
+    function runAStar(event){
+        console.log(graph, vertices, nodeCoordinates)
+        const start = document.getElementById('my-select').value; // Get the selected value
+        const goal = document.getElementById('my-select2').value;
+        const endPath = AStar(vertices[start], vertices[goal], graph, vertices, nodeCoordinates);
+        // const endPath = UCS("G", "F", graph, vertices, nodeCoordinates);
+        let road = endPath.road
+        console.log(road)
+        let resMatrix = matrix
+        for(let i = 0; i < resMatrix.length; i++){
+            for(let j = 0; j < resMatrix.length; j++){
+                for(let k = 0; k < road.length; k++){
+                    if(road[k] == resMatrix[i][j]){
+                        resMatrix[i][j] = "+" + resMatrix[i][j]
+                    }
+                }
+            }
+        }
+        visualize(resMatrix)
+
+    }
+
+    function visualize(matrixInput){
+        const visited = {}
+        const edges = []
+        for (let i = 0; i < matrixInput.length; i++) {
+            for (let j = 0; j < matrixInput[i].length; j++) {
+                if(matrixInput[i][j].startsWith("+")){
+                    if(visited[matrixInput[i][j]] != true){
+                        edges.push({ from: vertices[i], to: vertices2[j], label: matrixInput[i][j].substring(1), color: {color: "blue"}});
+                    }
+                    visited[matrixInput[i][j]] = true
+                }
+                if (matrixInput[i][j] != 0) {
+                    if(visited[matrixInput[i][j]] != true){
+                        edges.push({ from: vertices[i], to: vertices2[j], label: matrixInput[i][j], color: {color: "white"}});
+                    }
+                    visited[matrixInput[i][j]] = true
+                }
+            }
+        }
+        console.log(edges)
+        const container = document.getElementById('mynetwork');
+        const data = { nodes, edges };
+        const options = {
+            layout: {
+                hierarchical: false,
+                improvedLayout: false
+            },
+            nodes: {
+                shape: "circle",
+                font: {
+                size: 14,
+                color: "black"
+                },
+                scaling: {
+                label: true
+                },
+                color: {
+                border: "white",
+                background: "white",
+                highlight: {
+                    border: "#253494",
+                    background: "#6ea5f9"
+                }
+                },
+            },
+        };
+        const network = new vis.Network(container, data, options);
+    }
+      </script>  
+  </body>
+</html>
